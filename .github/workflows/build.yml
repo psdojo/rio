@@ -1,30 +1,28 @@
-name: Build Rio for Linux
+name: Build Rio for Fedora 39
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: fedora:39
 
     steps:
-      - name: ✅ Checkout source
+      - name: Install dependencies
+        run: |
+          dnf install -y git rust cargo make gcc curl mesa-libEGL-devel mesa-libGL-devel vulkan-loader
+
+      - name: Checkout Rio
         uses: actions/checkout@v4
 
-      - name: 🦀 Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
+      - name: Build
+        run: |
+          cargo build --release
 
-      - name: 📦 Build Rio in release mode
-        run: cargo build --release
-
-      - name: 📤 Upload Rio binary
+      - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
-          name: rio-linux
+          name: rio-fedora39
           path: target/release/rio
