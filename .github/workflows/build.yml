@@ -1,0 +1,27 @@
+name: Build Rio for Linux
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Build release binary
+        run: cargo build --release
+
+      - name: Upload Rio binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: rio-linux
+          path: target/release/rio
