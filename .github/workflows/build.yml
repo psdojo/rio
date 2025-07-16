@@ -10,23 +10,28 @@ jobs:
       image: fedora:39
 
     steps:
-      - name: Install dependencies
+      - name: Install system dependencies
         run: |
-          dnf install -y git curl gcc make \
+          dnf update -y
+          dnf install -y \
+            git curl gcc gcc-c++ make \
+            fontconfig-devel libxkbcommon-devel \
             mesa-libEGL-devel mesa-libGL-devel vulkan-loader \
-            fontconfig-devel libxkbcommon-devel
+            cmake pkgconfig
 
       - name: Install latest Rust (via rustup)
         run: |
           curl https://sh.rustup.rs -sSf | sh -s -- -y
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          source "$HOME/.cargo/env"
+          rustup show
 
-      - name: Checkout Rio
+      - name: Checkout Rio source
         uses: actions/checkout@v4
 
       - name: Build Rio
         run: |
-          source $HOME/.cargo/env
+          source "$HOME/.cargo/env"
           cargo build --release
 
       - name: Upload Rio binary
