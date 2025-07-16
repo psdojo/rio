@@ -12,16 +12,24 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          dnf install -y git rust cargo make gcc curl mesa-libEGL-devel mesa-libGL-devel vulkan-loader
+          dnf install -y git curl gcc make \
+            mesa-libEGL-devel mesa-libGL-devel vulkan-loader \
+            fontconfig-devel libxkbcommon-devel
+
+      - name: Install latest Rust (via rustup)
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- -y
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Checkout Rio
         uses: actions/checkout@v4
 
-      - name: Build
+      - name: Build Rio
         run: |
+          source $HOME/.cargo/env
           cargo build --release
 
-      - name: Upload binary
+      - name: Upload Rio binary
         uses: actions/upload-artifact@v4
         with:
           name: rio-fedora39
